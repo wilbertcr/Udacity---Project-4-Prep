@@ -64,26 +64,25 @@ class ConferenceApi(remote.Service):
 
     def _getProfileFromUser(self):
         """Return user Profile from datastore, creating new one if non-existent."""
-        ## TODO 2
         ## step 1: make sure user is authed
         ## uncomment the following lines:
-        # user = endpoints.get_current_user()
-        # if not user:
-        #     raise endpoints.UnauthorizedException('Authorization required')
+        user = endpoints.get_current_user()
+        if not user:
+            raise endpoints.UnauthorizedException('Authorization required')
         profile = None
         ## step 2: create a new Profile from logged in user data
         ## you can use user.nickname() to get displayName
         ## and user.email() to get mainEmail
         if not profile:
             profile = Profile(
-                userId = None,
+                userId = user.user_id(),
                 key = None,
-                displayName = "Test", 
-                mainEmail= None,
+                displayName = user.nickname(), 
+                mainEmail= user.email(),
                 teeShirtSize = str(TeeShirtSize.NOT_SPECIFIED),
             )
 
-        return profile      # return Profile
+        return profile # return Profile
 
 
     def _doProfile(self, save_request=None):
@@ -109,9 +108,6 @@ class ConferenceApi(remote.Service):
         """Return user profile."""
         return self._doProfile()
 
-    # TODO 1
-    # 1. change request class
-    # 2. pass request to _doProfile function
     @endpoints.method(ProfileMiniForm, ProfileForm,
             path='profile', http_method='POST', name='saveProfile')
     def saveProfile(self, request):
